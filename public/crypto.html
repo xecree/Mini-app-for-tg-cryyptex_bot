@@ -5,139 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Курсы Криптовалют</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Soyuz+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient-1: #ffffff;
-            --bg-gradient-2: #fff5f0;
-            --bg-gradient-3: #ffe8e0;
-            --bg-gradient-4: #ffffff;
-            --container-bg: rgba(255, 255, 255, 0.7);
-            --container-border: rgba(255, 200, 180, 0.3);
-            --text-primary: #333;
-            --text-secondary: #666;
-            --border-color: rgba(255, 150, 120, 0.2);
-            --hover-bg: rgba(255, 150, 100, 0.1);
-            --table-header-bg: rgba(255, 100, 50, 0.9);
-            --table-header-text: white;
-            --positive: #ff6b35;
-            --negative: #e74c3c;
-            --modal-bg: rgba(255, 255, 255, 0.85);
-            --modal-overlay: rgba(255, 150, 100, 0.2);
-            --button-bg: rgba(255, 255, 255, 0.6);
-            --button-border: rgba(255, 100, 50, 0.4);
-            --button-text: #ff6b35;
-            --button-hover: rgba(255, 150, 120, 0.3);
-            --button-active-bg: rgba(255, 100, 50, 0.95);
-            --button-active-text: white;
-            --shadow: 0 8px 32px rgba(255, 100, 50, 0.15);
-            --shadow-strong: 0 20px 60px rgba(255, 100, 50, 0.2);
-            --glass-blur: blur(20px);
-        }
-
-        [data-theme="dark"] {
-            --bg-gradient-1: #1a1a1a;
-            --bg-gradient-2: #252525;
-            --bg-gradient-3: #2a2a2a;
-            --bg-gradient-4: #1f1f1f;
-            --container-bg: rgba(30, 30, 30, 0.7);
-            --container-border: rgba(255, 100, 50, 0.2);
-            --text-primary: #f0f0f0;
-            --text-secondary: #a0a0a0;
-            --border-color: rgba(255, 100, 50, 0.15);
-            --hover-bg: rgba(255, 100, 50, 0.1);
-            --table-header-bg: rgba(255, 80, 40, 0.9);
-            --table-header-text: #fff;
-            --positive: #ff8a65;
-            --negative: #ef5350;
-            --modal-bg: rgba(30, 30, 30, 0.85);
+            --bg-gradient-1: #05081a;
+            --bg-gradient-2: #0f1235;
+            --bg-gradient-3: #1a1f4f;
+            --bg-gradient-4: #0d1230;
+            --container-bg: rgba(10, 15, 40, 0.75);
+            --container-border: rgba(50, 90, 180, 0.3);
+            --text-primary: #e6f0ff;
+            --text-secondary: #8ab4f8;
+            --border-color: rgba(70, 110, 200, 0.2);
+            --hover-bg: rgba(70, 110, 200, 0.12);
+            --table-header-bg: rgba(20, 50, 130, 0.95);
+            --table-header-text: #ffffff;
+            --positive: #4ade80;
+            --negative: #f87171;
+            --neutral: #60a5fa;
+            --modal-bg: rgba(10, 15, 40, 0.9);
             --modal-overlay: rgba(0, 0, 0, 0.7);
-            --button-bg: rgba(255, 255, 255, 0.1);
-            --button-border: rgba(255, 100, 50, 0.4);
-            --button-text: #ff8a65;
-            --button-hover: rgba(255, 100, 50, 0.2);
-            --button-active-bg: rgba(255, 80, 40, 0.9);
+            --button-bg: rgba(30, 60, 120, 0.4);
+            --button-border: rgba(70, 130, 220, 0.5);
+            --button-text: #93c5fd;
+            --button-hover: rgba(70, 130, 220, 0.25);
+            --button-active-bg: rgba(40, 90, 200, 0.9);
             --button-active-text: white;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.5);
-            --glass-blur: blur(20px);
+            --shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            --shadow-strong: 0 25px 80px rgba(0, 0, 0, 0.6);
+            --glass-blur: blur(25px);
+            --glow-intensity: 0 0 25px rgba(50, 100, 200, 0.6);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Soyuz Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 700;
             min-height: 100vh;
             padding: 10px;
             color: var(--text-primary);
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3), var(--bg-gradient-4));
             transition: all 0.5s ease;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Анимированный белый фон с легкими переливами */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3), var(--bg-gradient-4));
-            background-size: 400% 400%;
-            animation: liquidGradient 15s ease infinite;
-            z-index: -2;
-        }
-
-        @keyframes liquidGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Плавающие blob'ы для эффекта жидкости - теперь оранжево-белые */
-        .blob {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.5;
-            z-index: -1;
-            animation: blobFloat 20s ease-in-out infinite;
-        }
-
-        .blob-1 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 150, 100, 0.4), transparent);
-            top: -100px;
-            left: -100px;
-            animation-delay: 0s;
-        }
-
-        .blob-2 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255, 120, 80, 0.35), transparent);
-            bottom: -150px;
-            right: -150px;
-            animation-delay: -7s;
-        }
-
-        .blob-3 {
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, rgba(255, 180, 140, 0.3), transparent);
-            top: 50%;
-            left: 50%;
-            animation-delay: -14s;
-        }
-
-        @keyframes blobFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(50px, -50px) scale(1.1); }
-            50% { transform: translate(-30px, 30px) scale(0.95); }
-            75% { transform: translate(40px, 40px) scale(1.05); }
-        }
-        
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -146,7 +59,7 @@
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--container-border);
             border-radius: 24px;
-            box-shadow: var(--shadow-strong);
+            box-shadow: var(--shadow-strong), var(--glow-intensity);
             padding: 20px;
             opacity: 0;
             transform: translateY(60px);
@@ -155,24 +68,6 @@
             overflow: hidden;
         }
 
-        /* Блик на стекле */
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            animation: glassShine 8s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes glassShine {
-            0%, 100% { left: -100%; }
-            50% { left: 100%; }
-        }
-        
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(60px); }
             to { opacity: 1; transform: translateY(0); }
@@ -192,7 +87,9 @@
             font-size: 1.8em;
             opacity: 0;
             animation: fadeIn 0.6s ease-out 0.3s forwards;
-            text-shadow: 0 2px 10px rgba(255, 100, 50, 0.2);
+            text-shadow: 0 0 15px rgba(60, 120, 255, 0.4);
+            font-weight: 700;
+            font-family: 'Soyuz Grotesk', sans-serif;
         }
         
         .subtitle { 
@@ -200,35 +97,13 @@
             font-size: 1em;
             opacity: 0;
             animation: fadeIn 0.6s ease-out 0.5s forwards;
+            font-weight: 400;
+            font-family: 'Soyuz Grotesk', sans-serif;
         }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .theme-toggle {
-            background: var(--button-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--button-border);
-            color: var(--button-text);
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.15);
-        }
-        
-        .theme-toggle:hover {
-            background: var(--button-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 100, 50, 0.25);
         }
         
         .loading { 
@@ -238,6 +113,9 @@
             color: var(--button-text);
             opacity: 0;
             animation: fadeIn 0.6s ease-out 0.4s forwards;
+            text-shadow: 0 0 10px rgba(60, 120, 255, 0.3);
+            font-family: 'Soyuz Grotesk', sans-serif;
+            font-weight: 700;
         }
         
         .controls {
@@ -267,25 +145,26 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 0.85em;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 5px;
-            box-shadow: 0 2px 10px rgba(255, 100, 50, 0.1);
+            box-shadow: 0 4px 15px rgba(60, 120, 255, 0.15), var(--glow-intensity);
+            font-family: 'Soyuz Grotesk', sans-serif;
         }
         
         .sort-btn:hover {
             background: var(--button-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.2);
+            box-shadow: 0 6px 20px rgba(60, 120, 255, 0.25), 0 0 20px rgba(60, 120, 255, 0.4);
         }
         
         .sort-btn.active {
             background: var(--button-active-bg);
             color: var(--button-active-text);
             border-color: transparent;
-            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.3);
+            box-shadow: 0 6px 20px rgba(60, 120, 255, 0.3), 0 0 25px rgba(60, 120, 255, 0.6);
         }
         
         .sort-btn .arrow {
@@ -309,6 +188,8 @@
             opacity: 0;
             transform: translateY(40px);
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            box-shadow: 0 0 15px rgba(60, 120, 255, 0.2);
+            border-radius: 12px;
         }
         
         table.visible {
@@ -321,6 +202,7 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             color: var(--table-header-text);
+            box-shadow: 0 0 20px rgba(60, 120, 255, 0.3);
         }
         
         thead tr:first-child th:first-child {
@@ -336,10 +218,14 @@
             text-align: left; 
             border-bottom: 1px solid var(--border-color); 
             white-space: nowrap; 
+            font-family: 'Soyuz Grotesk', sans-serif;
+            font-weight: 700;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
         
         th { 
-            font-weight: 600; 
+            font-weight: 700; 
             text-transform: uppercase; 
             font-size: 0.85em; 
             letter-spacing: 0.5px; 
@@ -351,6 +237,7 @@
         
         th:hover {
             opacity: 0.9;
+            text-shadow: 0 0 8px rgba(120, 180, 255, 0.4);
         }
         
         tbody tr { 
@@ -368,15 +255,17 @@
         
         tbody tr:hover { 
             background-color: var(--hover-bg); 
+            box-shadow: 0 0 15px rgba(60, 120, 255, 0.2);
         }
         
-        .positive { color: var(--positive); font-weight: 600; }
-        .negative { color: var(--negative); font-weight: 600; }
+        .positive { color: var(--positive); font-weight: 700; text-shadow: 0 0 8px rgba(74, 222, 128, 0.3); }
+        .negative { color: var(--negative); font-weight: 700; text-shadow: 0 0 8px rgba(248, 113, 113, 0.3); }
+        .neutral { color: var(--neutral); font-weight: 700; text-shadow: 0 0 8px rgba(96, 165, 250, 0.3); }
         
         .coin-name { display: flex; align-items: center; gap: 8px; }
         .coin-name img { width: 28px; height: 28px; border-radius: 50%; }
-        .price { font-weight: 600; color: var(--text-primary); }
-        .market-cap { color: var(--text-secondary); font-size: 0.9em; }
+        .price { font-weight: 700; color: var(--text-primary); text-shadow: 0 0 6px rgba(200, 220, 255, 0.2); }
+        .market-cap { color: var(--text-secondary); font-size: 0.9em; font-weight: 700; }
         
         .modal {
             display: none; 
@@ -401,24 +290,12 @@
             border-radius: 24px; 
             width: 95%; 
             max-width: 1000px;
-            box-shadow: var(--shadow-strong);
+            box-shadow: var(--shadow-strong), var(--glow-intensity);
             opacity: 0;
             transform: translateY(50px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
             position: relative;
             overflow: hidden;
-        }
-
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: glassShine 6s ease-in-out infinite;
-            pointer-events: none;
         }
         
         .modal-content.show {
@@ -430,13 +307,14 @@
             color: var(--text-secondary); 
             float: right; 
             font-size: 32px; 
-            font-weight: bold; 
+            font-weight: 700; 
             cursor: pointer; 
             line-height: 1; 
+            font-family: 'Soyuz Grotesk', sans-serif;
         }
-        .close:hover { color: var(--button-text); }
+        .close:hover { color: var(--button-text); text-shadow: 0 0 10px rgba(147, 197, 253, 0.5); }
         
-        #chartTitle { color: var(--button-text); margin-bottom: 20px; font-size: 1.5em; }
+        #chartTitle { color: var(--button-text); margin-bottom: 20px; font-size: 1.5em; text-shadow: 0 0 12px rgba(60, 120, 255, 0.3); font-family: 'Soyuz Grotesk', sans-serif; font-weight: 700; }
         
         .timeframe-buttons { 
             margin: 20px 0; 
@@ -457,25 +335,21 @@
             border-radius: 25px; 
             cursor: pointer;
             font-size: 0.9em; 
-            font-weight: 600; 
+            font-weight: 700; 
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(255, 100, 50, 0.1);
+            box-shadow: 0 4px 15px rgba(60, 120, 255, 0.15), var(--glow-intensity);
+            font-family: 'Soyuz Grotesk', sans-serif;
         }
         .timeframe-buttons button:hover { 
             background: var(--button-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.2);
+            box-shadow: 0 6px 20px rgba(60, 120, 255, 0.25), 0 0 20px rgba(60, 120, 255, 0.4);
         }
         .timeframe-buttons button.active {
             background: var(--button-active-bg);
             color: var(--button-active-text);
             border-color: transparent;
-            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.3);
-        }
-        .timeframe-buttons button:disabled { 
-            opacity: 0.5; 
-            cursor: not-allowed; 
-            transform: none; 
+            box-shadow: 0 6px 20px rgba(60, 120, 255, 0.3), 0 0 25px rgba(60, 120, 255, 0.6);
         }
         
         #chartContainer { position: relative; height: 300px; margin-top: 20px; }
@@ -497,7 +371,9 @@
             bottom: 30px; 
             transform: translateX(-50%);
             font-size: 14px; 
-            box-shadow: var(--shadow-strong);
+            box-shadow: var(--shadow-strong), var(--glow-intensity);
+            font-family: 'Soyuz Grotesk', sans-serif;
+            font-weight: 700;
         }
         .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
@@ -516,41 +392,32 @@
     </style>
 </head>
 <body>
-    <!-- Жидкие blob'ы на фоне -->
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-
     <div class="container">
         <div class="header">
             <div class="header-left">
-                <h1>📊 Курсы Криптовалют</h1>
-                <p class="subtitle">Нажмите на криптовалюту для просмотра графика</p>
+                <h1>📊 КУРСЫ КРИПТОВАЛЮТ</h1>
+                <p class="subtitle">НАЖМИТЕ НА КРИПТОВАЛЮТУ ДЛЯ ПРОСМОТРА ГРАФИКА</p>
             </div>
-            <button class="theme-toggle" id="themeToggle">
-                <span id="themeIcon">🌙</span>
-                <span id="themeText">Темная тема</span>
-            </button>
         </div>
         
-        <div id="loading" class="loading">Загрузка данных...</div>
+        <div id="loading" class="loading">ЗАГРУЗКА ДАННЫХ...</div>
         
         <div class="controls" id="controls" style="display:none;">
             <div class="sort-buttons">
                 <button class="sort-btn active" data-sort="price">
-                    Цена <span class="arrow">↓</span>
+                    ЦЕНА <span class="arrow">↓</span>
                 </button>
                 <button class="sort-btn" data-sort="1h">
-                    1ч % <span class="arrow">↕</span>
+                    1Ч % <span class="arrow">↕</span>
                 </button>
                 <button class="sort-btn" data-sort="24h">
-                    24ч % <span class="arrow">↕</span>
+                    24Ч % <span class="arrow">↕</span>
                 </button>
                 <button class="sort-btn" data-sort="7d">
-                    7д % <span class="arrow">↕</span>
+                    7Д % <span class="arrow">↕</span>
                 </button>
                 <button class="sort-btn" data-sort="marketCap">
-                    Капитализация <span class="arrow">↕</span>
+                    КАПИТАЛИЗАЦИЯ <span class="arrow">↕</span>
                 </button>
             </div>
         </div>
@@ -560,12 +427,12 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Название</th>
-                        <th>Цена (USD)</th>
-                        <th>Капитализация</th>
-                        <th>1ч %</th>
-                        <th>24ч %</th>
-                        <th>7д %</th>
+                        <th>НАЗВАНИЕ</th>
+                        <th>ЦЕНА (USD)</th>
+                        <th>КАПИТАЛИЗАЦИЯ</th>
+                        <th>1Ч %</th>
+                        <th>24Ч %</th>
+                        <th>7Д %</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -576,12 +443,12 @@
     <div id="chartModal" class="modal">
         <div class="modal-content" id="modalContent">
             <span class="close">&times;</span>
-            <h2 id="chartTitle">График</h2>
+            <h2 id="chartTitle">ГРАФИК</h2>
             <div class="timeframe-buttons">
-                <button data-days="1">1 День</button>
-                <button data-days="7" class="active">7 Дней</button>
-                <button data-days="30">30 Дней</button>
-                <button data-days="365">1 Год</button>
+                <button data-days="1">1 ДЕНЬ</button>
+                <button data-days="7" class="active">7 ДНЕЙ</button>
+                <button data-days="30">30 ДНЕЙ</button>
+                <button data-days="365">1 ГОД</button>
             </div>
             <div id="chartContainer"><canvas id="priceChart"></canvas></div>
         </div>
@@ -603,32 +470,6 @@
         let currentSort = 'price';
         let sortDirection = 'desc';
 
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        const themeText = document.getElementById('themeText');
-        
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        if (savedTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            themeIcon.textContent = '☀️';
-            themeText.textContent = 'Светлая тема';
-        }
-        
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            if (currentTheme === 'dark') {
-                document.documentElement.removeAttribute('data-theme');
-                themeIcon.textContent = '🌙';
-                themeText.textContent = 'Темная тема';
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                themeIcon.textContent = '☀️';
-                themeText.textContent = 'Светлая тема';
-                localStorage.setItem('theme', 'dark');
-            }
-        });
-
         function showToast(message) {
             const x = document.getElementById("toast");
             x.innerText = message;
@@ -643,6 +484,13 @@
             return '$' + cap.toLocaleString();
         }
 
+        function formatPrice(price) {
+            if (price < 0.000001) return '$' + price.toExponential(4);
+            if (price < 0.01) return '$' + price.toFixed(6);
+            if (price < 1) return '$' + price.toFixed(4);
+            return '$' + price.toLocaleString();
+        }
+
         async function fetchCryptoData() {
             try {
                 const url = `https://api.coingecko.com/api/v3/coins/markets?ids=${coinIds.join(',')}&vs_currency=usd&order=market_cap_desc&per_page=15&page=1&sparkline=false&price_change_percentage=1h,24h,7d`;
@@ -653,7 +501,7 @@
                 cryptoData = data;
                 renderTable();
             } catch (error) {
-                document.getElementById('loading').innerText = `Ошибка: ${error.message}. Попробуйте позже.`;
+                document.getElementById('loading').innerText = `ОШИБКА: ${error.message}. ПОПРОБУЙТЕ ПОЗЖЕ.`;
             }
         }
 
@@ -661,36 +509,16 @@
             const sorted = [...data];
             sorted.sort((a, b) => {
                 let valA, valB;
-                
                 switch(sortBy) {
-                    case 'price':
-                        valA = a.current_price || 0;
-                        valB = b.current_price || 0;
-                        break;
-                    case '1h':
-                        valA = a.price_change_percentage_1h_in_currency || 0;
-                        valB = b.price_change_percentage_1h_in_currency || 0;
-                        break;
-                    case '24h':
-                        valA = a.price_change_percentage_24h_in_currency || 0;
-                        valB = b.price_change_percentage_24h_in_currency || 0;
-                        break;
-                    case '7d':
-                        valA = a.price_change_percentage_7d_in_currency || 0;
-                        valB = b.price_change_percentage_7d_in_currency || 0;
-                        break;
-                    case 'marketCap':
-                        valA = a.market_cap || 0;
-                        valB = b.market_cap || 0;
-                        break;
-                    default:
-                        valA = a.market_cap_rank || 0;
-                        valB = b.market_cap_rank || 0;
+                    case 'price': valA = a.current_price || 0; valB = b.current_price || 0; break;
+                    case '1h': valA = a.price_change_percentage_1h_in_currency || 0; valB = b.price_change_percentage_1h_in_currency || 0; break;
+                    case '24h': valA = a.price_change_percentage_24h_in_currency || 0; valB = b.price_change_percentage_24h_in_currency || 0; break;
+                    case '7d': valA = a.price_change_percentage_7d_in_currency || 0; valB = b.price_change_percentage_7d_in_currency || 0; break;
+                    case 'marketCap': valA = a.market_cap || 0; valB = b.market_cap || 0; break;
+                    default: valA = a.market_cap_rank || 0; valB = b.market_cap_rank || 0;
                 }
-                
                 return direction === 'asc' ? valA - valB : valB - valA;
             });
-            
             return sorted;
         }
 
@@ -705,16 +533,19 @@
                 row.addEventListener('click', () => openChart(coin.id, coin.name));
 
                 const formatPercent = (val) => {
-                    if (val === null || val === undefined) return 'N/A';
+                    if (val === null || val === undefined) return '<span class="neutral">N/A</span>';
                     const formatted = Math.abs(val).toFixed(2) + '%';
-                    const className = val >= 0 ? 'positive' : 'negative';
-                    return `<span class="${className}">${val >= 0 ? '↑' : '↓'} ${formatted}</span>`;
+                    let className, arrow;
+                    if (val > 0.5) { className = 'positive'; arrow = '↑'; }
+                    else if (val < -0.5) { className = 'negative'; arrow = '↓'; }
+                    else { className = 'neutral'; arrow = val >= 0 ? '↑' : '↓'; }
+                    return `<span class="${className}">${arrow} ${formatted}</span>`;
                 };
 
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td><div class="coin-name"><img src="${coin.image}" alt="${coin.name}"><span>${coin.name}</span></div></td>
-                    <td class="price">$${coin.current_price.toLocaleString()}</td>
+                    <td><div class="coin-name"><img src="${coin.image}" alt="${coin.name}"><span>${coin.name.toUpperCase()}</span></div></td>
+                    <td class="price">${formatPrice(coin.current_price)}</td>
                     <td class="market-cap">${formatMarketCap(coin.market_cap)}</td>
                     <td>${formatPercent(coin.price_change_percentage_1h_in_currency)}</td>
                     <td>${formatPercent(coin.price_change_percentage_24h_in_currency)}</td>
@@ -731,82 +562,97 @@
             setTimeout(() => {
                 table.classList.add('visible');
                 const rows = table.querySelectorAll('tbody tr');
-                rows.forEach((row, index) => {
-                    setTimeout(() => {
-                        row.classList.add('visible');
-                    }, index * 80);
-                });
+                rows.forEach((row, i) => setTimeout(() => row.classList.add('visible'), i * 80));
             }, 100);
+        }
+
+        // Обновление цен в реальном времени
+        function updatePrices() {
+            fetchCryptoData().then(() => {
+                // После получения новых данных, обновляем строки таблицы
+                const sortedData = sortData(cryptoData, currentSort, sortDirection);
+                const rows = document.querySelectorAll('#tableBody tr');
+                
+                sortedData.forEach((coin, index) => {
+                    const row = rows[index];
+                    if (!row) return;
+                    
+                    const formatPercent = (val) => {
+                        if (val === null || val === undefined) return '<span class="neutral">N/A</span>';
+                        const formatted = Math.abs(val).toFixed(2) + '%';
+                        let className, arrow;
+                        if (val > 0.5) { className = 'positive'; arrow = '↑'; }
+                        else if (val < -0.5) { className = 'negative'; arrow = '↓'; }
+                        else { className = 'neutral'; arrow = val >= 0 ? '↑' : '↓'; }
+                        return `<span class="${className}">${arrow} ${formatted}</span>`;
+                    };
+                    
+                    // Обновляем только ячейки с ценой, капитализацией и процентами
+                    const cells = row.querySelectorAll('td');
+                    cells[2].innerHTML = formatPrice(coin.current_price); // Цена
+                    cells[3].innerHTML = formatMarketCap(coin.market_cap); // Капитализация
+                    cells[4].innerHTML = formatPercent(coin.price_change_percentage_1h_in_currency); // 1ч %
+                    cells[5].innerHTML = formatPercent(coin.price_change_percentage_24h_in_currency); // 24ч %
+                    cells[6].innerHTML = formatPercent(coin.price_change_percentage_7d_in_currency); // 7д %
+                    
+                    // Обновляем имя монеты (на всякий случай)
+                    const coinNameDiv = cells[1].querySelector('.coin-name');
+                    coinNameDiv.innerHTML = `<img src="${coin.image}" alt="${coin.name}"><span>${coin.name.toUpperCase()}</span>`;
+                });
+            }).catch(error => {
+                console.error('Ошибка обновления цен:', error);
+            });
         }
 
         document.querySelectorAll('.sort-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const sortType = e.currentTarget.dataset.sort;
-                
-                if (currentSort === sortType) {
-                    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-                } else {
-                    currentSort = sortType;
-                    sortDirection = 'desc';
-                }
+                if (currentSort === sortType) sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                else { currentSort = sortType; sortDirection = 'desc'; }
                 
                 document.querySelectorAll('.sort-btn').forEach(b => {
                     b.classList.remove('active');
                     const arrow = b.querySelector('.arrow');
                     if (arrow) arrow.textContent = '↕';
                 });
-                
                 e.currentTarget.classList.add('active');
-                
                 const arrow = e.currentTarget.querySelector('.arrow');
                 arrow.textContent = sortDirection === 'asc' ? '↑' : '↓';
-                
                 renderTable();
             });
         });
 
         function openChart(coinId, coinName) {
-            if (isFetching) {
-                showToast("Подождите, данные загружаются...");
-                return;
-            }
-            
+            if (isFetching) { showToast("ПОДОЖДИТЕ..."); return; }
             currentCoinId = coinId;
-            const modal = document.getElementById('chartModal');
-            const modalContent = document.getElementById('modalContent');
-            
-            modal.style.display = 'block';
-            document.getElementById('chartTitle').innerText = `📈 ${coinName}`;
-            
-            setTimeout(() => {
-                modalContent.classList.add('show');
-            }, 10);
+            document.getElementById('chartModal').style.display = 'block';
+            document.getElementById('chartTitle').innerText = `📈 ${coinName.toUpperCase()}`;
+            document.getElementById('modalContent').classList.add('show');
             
             document.querySelectorAll('.timeframe-buttons button').forEach(btn => btn.classList.remove('active'));
             document.querySelector('button[data-days="7"]').classList.add('active');
-            
             loadChartData(7);
         }
 
-        document.querySelector('.close').addEventListener('click', closeModal);
-        window.addEventListener('click', (e) => { 
-            if (e.target.id === 'chartModal') closeModal(); 
-        });
-
-        function closeModal() {
-            const modalContent = document.getElementById('modalContent');
-            modalContent.classList.remove('show');
-            
+        document.querySelector('.close').addEventListener('click', () => {
+            document.getElementById('modalContent').classList.remove('show');
             setTimeout(() => {
                 document.getElementById('chartModal').style.display = 'none';
                 if (chart) { chart.destroy(); chart = null; }
             }, 300);
-        }
+        });
 
-        document.querySelectorAll('.timeframe-buttons button').forEach(button => {
-            button.addEventListener('click', (e) => {
+        window.addEventListener('click', (e) => {
+            if (e.target.id === 'chartModal') {
+                document.getElementById('modalContent').classList.remove('show');
+                setTimeout(() => document.getElementById('chartModal').style.display = 'none', 300);
+            }
+        });
+
+        document.querySelectorAll('.timeframe-buttons button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 if (isFetching) return;
-                document.querySelectorAll('.timeframe-buttons button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.timeframe-buttons button').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
                 loadChartData(parseInt(e.target.dataset.days));
             });
@@ -819,31 +665,23 @@
 
             try {
                 const url = `https://api.coingecko.com/api/v3/coins/${currentCoinId}/market_chart?vs_currency=usd&days=${days}`;
-                
                 let response;
                 for (let i = 0; i <= retries; i++) {
                     try {
                         response = await fetch(url);
                         if (response.ok) break;
-                        if (response.status === 429) {
-                            await new Promise(r => setTimeout(r, 2000)); 
-                        }
+                        if (response.status === 429) await new Promise(r => setTimeout(r, 2000));
                     } catch (e) {
                         if (i === retries) throw e;
                         await new Promise(r => setTimeout(r, 1000));
                     }
                 }
-
-                if (!response || !response.ok) {
-                    throw new Error(`Сервер перегружен (${response?.status || 'Error'})`);
-                }
-
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
                 renderChart(data.prices, days);
-
             } catch (error) {
                 console.error(error);
-                showToast("Не удалось загрузить график. Попробуйте через минуту.");
+                showToast("ОШИБКА ЗАГРУЗКИ ГРАФИКА");
             } finally {
                 isFetching = false;
                 buttons.forEach(b => b.disabled = false);
@@ -855,60 +693,67 @@
             if (chart) chart.destroy();
 
             const labels = prices.map(p => {
-                const date = new Date(p[0]);
-                if (days === 1) return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-                if (days <= 30) return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-                return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                const d = new Date(p[0]);
+                if (days === 1) return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                if (days <= 30) return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+                return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
             });
 
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const lineColor = isDark ? '#ff8a65' : '#ff6b35';
-            const gradientTop = isDark ? 'rgba(255, 138, 101, 0.4)' : 'rgba(255, 107, 53, 0.4)';
-            const gradientBottom = isDark ? 'rgba(255, 138, 101, 0.05)' : 'rgba(255, 107, 53, 0.05)';
-            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-            const tickColor = isDark ? '#a0a0a0' : '#888';
+            const lineColor = '#60a5fa';
+            const gradTop = 'rgba(96, 165, 250, 0.5)';
+            const gradBot = 'rgba(96, 165, 250, 0.1)';
 
             const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, gradientTop);
-            gradient.addColorStop(1, gradientBottom);
+            gradient.addColorStop(0, gradTop);
+            gradient.addColorStop(1, gradBot);
 
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [{
-                        label: 'Цена (USD)',
+                        label: 'ЦЕНА (USD)',
                         data: prices.map(p => p[1]),
                         borderColor: lineColor,
                         backgroundColor: gradient,
-                        borderWidth: 3, fill: true, tension: 0.4,
-                        pointRadius: 0, pointHoverRadius: 6,
+                        borderWidth: 4,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 8,
                         pointHoverBackgroundColor: lineColor,
-                        pointHoverBorderColor: '#fff', pointHoverBorderWidth: 3
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 4
                     }]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
+                    responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            mode: 'index', intersect: false,
-                            backgroundColor: isDark ? 'rgba(255, 80, 40, 0.9)' : 'rgba(255, 100, 50, 0.9)',
-                            titleColor: '#fff', bodyColor: '#fff',
-                            callbacks: { label: (ctx) => `$${ctx.parsed.y.toLocaleString()}` }
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(30, 64, 175, 0.95)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            callbacks: { label: ctx => `$${ctx.parsed.y.toLocaleString()}` }
                         }
                     },
                     scales: {
-                        x: { grid: { color: gridColor }, ticks: { color: tickColor, maxTicksLimit: 8 } },
-                        y: { grid: { color: gridColor }, ticks: { color: tickColor, callback: (v) => '$' + v.toLocaleString() } }
+                        x: { grid: { color: 'rgba(255,255,255,0.08)' }, ticks: { color: '#a0c0e0' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.08)' }, ticks: { color: '#a0c0e0', callback: v => '$' + v.toLocaleString() } }
                     },
                     interaction: { mode: 'nearest', axis: 'x', intersect: false }
                 }
             });
         }
 
+        // Запуск при загрузке
         fetchCryptoData();
-        setInterval(fetchCryptoData, 60000);
+        
+        // Автоматическое обновление цен каждые 5 секунд
+        setInterval(updatePrices, 5000);
     </script>
 </body>
 </html>
