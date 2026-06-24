@@ -6,54 +6,197 @@
     <title>Курсы Криптовалют</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        :root {
+            --bg-gradient-1: #ffffff;
+            --bg-gradient-2: #fff5f0;
+            --bg-gradient-3: #ffe8e0;
+            --bg-gradient-4: #ffffff;
+            --container-bg: rgba(255, 255, 255, 0.7);
+            --container-border: rgba(255, 200, 180, 0.3);
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: rgba(255, 150, 120, 0.2);
+            --hover-bg: rgba(255, 150, 100, 0.1);
+            --table-header-bg: rgba(255, 100, 50, 0.9);
+            --table-header-text: white;
+            --positive: #ff6b35;
+            --negative: #e74c3c;
+            --modal-bg: rgba(255, 255, 255, 0.85);
+            --modal-overlay: rgba(255, 150, 100, 0.2);
+            --button-bg: rgba(255, 255, 255, 0.6);
+            --button-border: rgba(255, 100, 50, 0.4);
+            --button-text: #ff6b35;
+            --button-hover: rgba(255, 150, 120, 0.3);
+            --button-active-bg: rgba(255, 100, 50, 0.95);
+            --button-active-text: white;
+            --shadow: 0 8px 32px rgba(255, 100, 50, 0.15);
+            --shadow-strong: 0 20px 60px rgba(255, 100, 50, 0.2);
+            --glass-blur: blur(20px);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-1: #1a1a1a;
+            --bg-gradient-2: #252525;
+            --bg-gradient-3: #2a2a2a;
+            --bg-gradient-4: #1f1f1f;
+            --container-bg: rgba(30, 30, 30, 0.7);
+            --container-border: rgba(255, 100, 50, 0.2);
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --border-color: rgba(255, 100, 50, 0.15);
+            --hover-bg: rgba(255, 100, 50, 0.1);
+            --table-header-bg: rgba(255, 80, 40, 0.9);
+            --table-header-text: #fff;
+            --positive: #ff8a65;
+            --negative: #ef5350;
+            --modal-bg: rgba(30, 30, 30, 0.85);
+            --modal-overlay: rgba(0, 0, 0, 0.7);
+            --button-bg: rgba(255, 255, 255, 0.1);
+            --button-border: rgba(255, 100, 50, 0.4);
+            --button-text: #ff8a65;
+            --button-hover: rgba(255, 100, 50, 0.2);
+            --button-active-bg: rgba(255, 80, 40, 0.9);
+            --button-active-text: white;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --glass-blur: blur(20px);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 10px;
-            color: #333;
+            color: var(--text-primary);
+            transition: all 0.5s ease;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Анимированный белый фон с легкими переливами */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3), var(--bg-gradient-4));
+            background-size: 400% 400%;
+            animation: liquidGradient 15s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes liquidGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Плавающие blob'ы для эффекта жидкости - теперь оранжево-белые */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            z-index: -1;
+            animation: blobFloat 20s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 150, 100, 0.4), transparent);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 120, 80, 0.35), transparent);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: -7s;
+        }
+
+        .blob-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(255, 180, 140, 0.3), transparent);
+            top: 50%;
+            left: 50%;
+            animation-delay: -14s;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -50px) scale(1.1); }
+            50% { transform: translate(-30px, 30px) scale(0.95); }
+            75% { transform: translate(40px, 40px) scale(1.05); }
         }
         
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: var(--container-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--container-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow-strong);
             padding: 20px;
-            
-            /* Анимация появления контейнера */
             opacity: 0;
             transform: translateY(60px);
             animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Блик на стекле */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: glassShine 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glassShine {
+            0%, 100% { left: -100%; }
+            50% { left: 100%; }
         }
         
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(60px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(60px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        h1 { 
-            text-align: center; 
-            color: #667eea; 
-            margin-bottom: 10px; 
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header-left h1 { 
+            color: var(--button-text);
             font-size: 1.8em;
             opacity: 0;
             animation: fadeIn 0.6s ease-out 0.3s forwards;
+            text-shadow: 0 2px 10px rgba(255, 100, 50, 0.2);
         }
         
         .subtitle { 
-            text-align: center; 
-            color: #888; 
-            margin-bottom: 20px; 
+            color: var(--text-secondary); 
             font-size: 1em;
             opacity: 0;
             animation: fadeIn 0.6s ease-out 0.5s forwards;
@@ -64,26 +207,105 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        .theme-toggle {
+            background: var(--button-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--button-border);
+            color: var(--button-text);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.15);
+        }
+        
+        .theme-toggle:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 100, 50, 0.25);
+        }
+        
         .loading { 
             text-align: center; 
             font-size: 18px; 
             margin-top: 50px; 
-            color: #667eea;
+            color: var(--button-text);
             opacity: 0;
             animation: fadeIn 0.6s ease-out 0.4s forwards;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out 0.6s forwards;
+        }
+        
+        .sort-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .sort-btn {
+            background: var(--button-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: var(--button-text);
+            border: 1px solid var(--button-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 10px rgba(255, 100, 50, 0.1);
+        }
+        
+        .sort-btn:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.2);
+        }
+        
+        .sort-btn.active {
+            background: var(--button-active-bg);
+            color: var(--button-active-text);
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.3);
+        }
+        
+        .sort-btn .arrow {
+            font-size: 0.8em;
         }
         
         .table-wrapper { 
             overflow-x: auto; 
             -webkit-overflow-scrolling: touch; 
-            border-radius: 10px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         table { 
             width: 100%; 
-            border-collapse: collapse; 
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 20px; 
-            min-width: 600px;
+            min-width: 650px;
             opacity: 0;
             transform: translateY(40px);
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
@@ -95,14 +317,24 @@
         }
         
         thead { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white; 
+            background: var(--table-header-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: var(--table-header-text);
+        }
+        
+        thead tr:first-child th:first-child {
+            border-top-left-radius: 15px;
+        }
+        
+        thead tr:first-child th:last-child {
+            border-top-right-radius: 15px;
         }
         
         th, td { 
             padding: 12px 8px; 
             text-align: left; 
-            border-bottom: 1px solid #eee; 
+            border-bottom: 1px solid var(--border-color); 
             white-space: nowrap; 
         }
         
@@ -112,7 +344,13 @@
             font-size: 0.85em; 
             letter-spacing: 0.5px; 
             position: sticky; 
-            top: 0; 
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        th:hover {
+            opacity: 0.9;
         }
         
         tbody tr { 
@@ -129,17 +367,17 @@
         }
         
         tbody tr:hover { 
-            background-color: #f8f9ff; 
+            background-color: var(--hover-bg); 
         }
         
-        .positive { color: #10b981; font-weight: 600; }
-        .negative { color: #ef4444; font-weight: 600; }
+        .positive { color: var(--positive); font-weight: 600; }
+        .negative { color: var(--negative); font-weight: 600; }
         
         .coin-name { display: flex; align-items: center; gap: 8px; }
         .coin-name img { width: 28px; height: 28px; border-radius: 50%; }
-        .price { font-weight: 600; color: #333; }
+        .price { font-weight: 600; color: var(--text-primary); }
+        .market-cap { color: var(--text-secondary); font-size: 0.9em; }
         
-        /* Модальное окно */
         .modal {
             display: none; 
             position: fixed; 
@@ -148,21 +386,39 @@
             top: 0;
             width: 100%; 
             height: 100%; 
-            background-color: rgba(0,0,0,0.7);
-            backdrop-filter: blur(5px);
+            background-color: var(--modal-overlay);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .modal-content {
-            background-color: white; 
+            background-color: var(--modal-bg); 
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--container-border);
             margin: 10% auto; 
             padding: 20px;
-            border-radius: 20px; 
+            border-radius: 24px; 
             width: 95%; 
             max-width: 1000px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-strong);
             opacity: 0;
             transform: translateY(50px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: glassShine 6s ease-in-out infinite;
+            pointer-events: none;
         }
         
         .modal-content.show {
@@ -171,16 +427,16 @@
         }
         
         .close { 
-            color: #aaa; 
+            color: var(--text-secondary); 
             float: right; 
             font-size: 32px; 
             font-weight: bold; 
             cursor: pointer; 
             line-height: 1; 
         }
-        .close:hover { color: #667eea; }
+        .close:hover { color: var(--button-text); }
         
-        #chartTitle { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
+        #chartTitle { color: var(--button-text); margin-bottom: 20px; font-size: 1.5em; }
         
         .timeframe-buttons { 
             margin: 20px 0; 
@@ -192,24 +448,29 @@
         }
         
         .timeframe-buttons button {
-            background: white; 
-            color: #667eea; 
-            border: 2px solid #667eea;
+            background: var(--button-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: var(--button-text);
+            border: 1px solid var(--button-border);
             padding: 8px 20px; 
             border-radius: 25px; 
             cursor: pointer;
             font-size: 0.9em; 
             font-weight: 600; 
             transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(255, 100, 50, 0.1);
         }
         .timeframe-buttons button:hover { 
-            background: #f8f9ff; 
-            transform: translateY(-2px); 
+            background: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.2);
         }
         .timeframe-buttons button.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; 
+            background: var(--button-active-bg);
+            color: var(--button-active-text);
             border-color: transparent;
+            box-shadow: 0 4px 15px rgba(255, 100, 50, 0.3);
         }
         .timeframe-buttons button:disabled { 
             opacity: 0.5; 
@@ -222,10 +483,13 @@
         .toast {
             visibility: hidden; 
             min-width: 250px; 
-            background-color: #333; 
-            color: #fff;
+            background: var(--modal-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--container-border);
+            color: var(--text-primary);
             text-align: center; 
-            border-radius: 10px; 
+            border-radius: 16px; 
             padding: 16px; 
             position: fixed;
             z-index: 2000; 
@@ -233,35 +497,75 @@
             bottom: 30px; 
             transform: translateX(-50%);
             font-size: 14px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-strong);
         }
         .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
         @media (max-width: 768px) {
-            .container { padding: 15px; border-radius: 15px; }
+            .container { padding: 15px; border-radius: 20px; }
             h1 { font-size: 1.5em; }
-            table { font-size: 0.9em; }
-            th, td { padding: 10px 6px; }
+            table { font-size: 0.85em; min-width: 600px; }
+            th, td { padding: 10px 5px; }
             .coin-name img { width: 24px; height: 24px; }
             .modal-content { margin: 5% auto; padding: 15px; }
             #chartContainer { height: 250px; }
+            .controls { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
+    <!-- Жидкие blob'ы на фоне -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
     <div class="container">
-        <h1>📊 Курсы Криптовалют</h1>
-        <p class="subtitle">Нажмите на криптовалюту для просмотра графика</p>
+        <div class="header">
+            <div class="header-left">
+                <h1>📊 Курсы Криптовалют</h1>
+                <p class="subtitle">Нажмите на криптовалюту для просмотра графика</p>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <span id="themeIcon">🌙</span>
+                <span id="themeText">Темная тема</span>
+            </button>
+        </div>
+        
         <div id="loading" class="loading">Загрузка данных...</div>
+        
+        <div class="controls" id="controls" style="display:none;">
+            <div class="sort-buttons">
+                <button class="sort-btn active" data-sort="price">
+                    Цена <span class="arrow">↓</span>
+                </button>
+                <button class="sort-btn" data-sort="1h">
+                    1ч % <span class="arrow">↕</span>
+                </button>
+                <button class="sort-btn" data-sort="24h">
+                    24ч % <span class="arrow">↕</span>
+                </button>
+                <button class="sort-btn" data-sort="7d">
+                    7д % <span class="arrow">↕</span>
+                </button>
+                <button class="sort-btn" data-sort="marketCap">
+                    Капитализация <span class="arrow">↕</span>
+                </button>
+            </div>
+        </div>
         
         <div class="table-wrapper">
             <table id="cryptoTable" style="display:none;">
                 <thead>
                     <tr>
-                        <th>#</th><th>Название</th><th>Символ</th>
-                        <th>Цена (USD)</th><th>1ч %</th><th>24ч %</th><th>7д %</th>
+                        <th>#</th>
+                        <th>Название</th>
+                        <th>Цена (USD)</th>
+                        <th>Капитализация</th>
+                        <th>1ч %</th>
+                        <th>24ч %</th>
+                        <th>7д %</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -269,7 +573,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно -->
     <div id="chartModal" class="modal">
         <div class="modal-content" id="modalContent">
             <span class="close">&times;</span>
@@ -296,12 +599,48 @@
         let currentCoinId = null;
         let chart = null;
         let isFetching = false;
+        let cryptoData = [];
+        let currentSort = 'price';
+        let sortDirection = 'desc';
+
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Светлая тема';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Темная тема';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Светлая тема';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
 
         function showToast(message) {
             const x = document.getElementById("toast");
             x.innerText = message;
             x.className = "toast show";
             setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        function formatMarketCap(cap) {
+            if (cap >= 1e12) return '$' + (cap / 1e12).toFixed(2) + 'T';
+            if (cap >= 1e9) return '$' + (cap / 1e9).toFixed(2) + 'B';
+            if (cap >= 1e6) return '$' + (cap / 1e6).toFixed(2) + 'M';
+            return '$' + cap.toLocaleString();
         }
 
         async function fetchCryptoData() {
@@ -311,17 +650,57 @@
                 
                 if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
                 const data = await response.json();
-                renderTable(data);
+                cryptoData = data;
+                renderTable();
             } catch (error) {
                 document.getElementById('loading').innerText = `Ошибка: ${error.message}. Попробуйте позже.`;
             }
         }
 
-        function renderTable(coins) {
+        function sortData(data, sortBy, direction) {
+            const sorted = [...data];
+            sorted.sort((a, b) => {
+                let valA, valB;
+                
+                switch(sortBy) {
+                    case 'price':
+                        valA = a.current_price || 0;
+                        valB = b.current_price || 0;
+                        break;
+                    case '1h':
+                        valA = a.price_change_percentage_1h_in_currency || 0;
+                        valB = b.price_change_percentage_1h_in_currency || 0;
+                        break;
+                    case '24h':
+                        valA = a.price_change_percentage_24h_in_currency || 0;
+                        valB = b.price_change_percentage_24h_in_currency || 0;
+                        break;
+                    case '7d':
+                        valA = a.price_change_percentage_7d_in_currency || 0;
+                        valB = b.price_change_percentage_7d_in_currency || 0;
+                        break;
+                    case 'marketCap':
+                        valA = a.market_cap || 0;
+                        valB = b.market_cap || 0;
+                        break;
+                    default:
+                        valA = a.market_cap_rank || 0;
+                        valB = b.market_cap_rank || 0;
+                }
+                
+                return direction === 'asc' ? valA - valB : valB - valA;
+            });
+            
+            return sorted;
+        }
+
+        function renderTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
-            coins.forEach((coin, index) => {
+            const sortedData = sortData(cryptoData, currentSort, sortDirection);
+
+            sortedData.forEach((coin, index) => {
                 const row = document.createElement('tr');
                 row.addEventListener('click', () => openChart(coin.id, coin.name));
 
@@ -335,8 +714,8 @@
                 row.innerHTML = `
                     <td>${index + 1}</td>
                     <td><div class="coin-name"><img src="${coin.image}" alt="${coin.name}"><span>${coin.name}</span></div></td>
-                    <td>${coin.symbol.toUpperCase()}</td>
                     <td class="price">$${coin.current_price.toLocaleString()}</td>
+                    <td class="market-cap">${formatMarketCap(coin.market_cap)}</td>
                     <td>${formatPercent(coin.price_change_percentage_1h_in_currency)}</td>
                     <td>${formatPercent(coin.price_change_percentage_24h_in_currency)}</td>
                     <td>${formatPercent(coin.price_change_percentage_7d_in_currency)}</td>
@@ -345,22 +724,46 @@
             });
 
             document.getElementById('loading').style.display = 'none';
+            document.getElementById('controls').style.display = 'flex';
             const table = document.getElementById('cryptoTable');
             table.style.display = 'table';
             
-            // Анимация появления таблицы
             setTimeout(() => {
                 table.classList.add('visible');
-                
-                // Поочередное появление строк
                 const rows = table.querySelectorAll('tbody tr');
                 rows.forEach((row, index) => {
                     setTimeout(() => {
                         row.classList.add('visible');
-                    }, index * 80); // Каждая следующая строка появляется через 80мс
+                    }, index * 80);
                 });
             }, 100);
         }
+
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const sortType = e.currentTarget.dataset.sort;
+                
+                if (currentSort === sortType) {
+                    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort = sortType;
+                    sortDirection = 'desc';
+                }
+                
+                document.querySelectorAll('.sort-btn').forEach(b => {
+                    b.classList.remove('active');
+                    const arrow = b.querySelector('.arrow');
+                    if (arrow) arrow.textContent = '↕';
+                });
+                
+                e.currentTarget.classList.add('active');
+                
+                const arrow = e.currentTarget.querySelector('.arrow');
+                arrow.textContent = sortDirection === 'asc' ? '↑' : '↓';
+                
+                renderTable();
+            });
+        });
 
         function openChart(coinId, coinName) {
             if (isFetching) {
@@ -375,7 +778,6 @@
             modal.style.display = 'block';
             document.getElementById('chartTitle').innerText = `📈 ${coinName}`;
             
-            // Анимация появления модалки
             setTimeout(() => {
                 modalContent.classList.add('show');
             }, 10);
@@ -459,9 +861,16 @@
                 return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
             });
 
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const lineColor = isDark ? '#ff8a65' : '#ff6b35';
+            const gradientTop = isDark ? 'rgba(255, 138, 101, 0.4)' : 'rgba(255, 107, 53, 0.4)';
+            const gradientBottom = isDark ? 'rgba(255, 138, 101, 0.05)' : 'rgba(255, 107, 53, 0.05)';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+            const tickColor = isDark ? '#a0a0a0' : '#888';
+
             const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
-            gradient.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
+            gradient.addColorStop(0, gradientTop);
+            gradient.addColorStop(1, gradientBottom);
 
             chart = new Chart(ctx, {
                 type: 'line',
@@ -470,11 +879,11 @@
                     datasets: [{
                         label: 'Цена (USD)',
                         data: prices.map(p => p[1]),
-                        borderColor: '#667eea',
+                        borderColor: lineColor,
                         backgroundColor: gradient,
                         borderWidth: 3, fill: true, tension: 0.4,
                         pointRadius: 0, pointHoverRadius: 6,
-                        pointHoverBackgroundColor: '#667eea',
+                        pointHoverBackgroundColor: lineColor,
                         pointHoverBorderColor: '#fff', pointHoverBorderWidth: 3
                     }]
                 },
@@ -484,14 +893,14 @@
                         legend: { display: false },
                         tooltip: {
                             mode: 'index', intersect: false,
-                            backgroundColor: 'rgba(102, 126, 234, 0.9)',
+                            backgroundColor: isDark ? 'rgba(255, 80, 40, 0.9)' : 'rgba(255, 100, 50, 0.9)',
                             titleColor: '#fff', bodyColor: '#fff',
                             callbacks: { label: (ctx) => `$${ctx.parsed.y.toLocaleString()}` }
                         }
                     },
                     scales: {
-                        x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#888', maxTicksLimit: 8 } },
-                        y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#888', callback: (v) => '$' + v.toLocaleString() } }
+                        x: { grid: { color: gridColor }, ticks: { color: tickColor, maxTicksLimit: 8 } },
+                        y: { grid: { color: gridColor }, ticks: { color: tickColor, callback: (v) => '$' + v.toLocaleString() } }
                     },
                     interaction: { mode: 'nearest', axis: 'x', intersect: false }
                 }
