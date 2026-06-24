@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курсы Криптовалют</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 20px;
+            
+            /* Анимация появления контейнера */
+            opacity: 0;
+            transform: translateY(60px);
+            animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 { 
+            text-align: center; 
+            color: #667eea; 
+            margin-bottom: 10px; 
+            font-size: 1.8em;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out 0.3s forwards;
+        }
+        
+        .subtitle { 
+            text-align: center; 
+            color: #888; 
+            margin-bottom: 20px; 
+            font-size: 1em;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out 0.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading { 
+            text-align: center; 
+            font-size: 18px; 
+            margin-top: 50px; 
+            color: #667eea;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out 0.4s forwards;
+        }
+        
+        .table-wrapper { 
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch; 
+            border-radius: 10px;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            min-width: 600px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        
+        table.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        thead { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+        }
+        
+        th, td { 
+            padding: 12px 8px; 
+            text-align: left; 
+            border-bottom: 1px solid #eee; 
+            white-space: nowrap; 
+        }
+        
+        th { 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            font-size: 0.85em; 
+            letter-spacing: 0.5px; 
+            position: sticky; 
+            top: 0; 
+        }
+        
+        tbody tr { 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        tbody tr.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out, background-color 0.3s ease;
+        }
+        
+        tbody tr:hover { 
+            background-color: #f8f9ff; 
+        }
+        
+        .positive { color: #10b981; font-weight: 600; }
+        .negative { color: #ef4444; font-weight: 600; }
+        
+        .coin-name { display: flex; align-items: center; gap: 8px; }
+        .coin-name img { width: 28px; height: 28px; border-radius: 50%; }
+        .price { font-weight: 600; color: #333; }
+        
+        /* Модальное окно */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background-color: white; 
+            margin: 10% auto; 
+            padding: 20px;
+            border-radius: 20px; 
+            width: 95%; 
+            max-width: 1000px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+        
+        .modal-content.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .close { 
+            color: #aaa; 
+            float: right; 
+            font-size: 32px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            line-height: 1; 
+        }
+        .close:hover { color: #667eea; }
+        
+        #chartTitle { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
+        
+        .timeframe-buttons { 
+            margin: 20px 0; 
+            text-align: center; 
+            display: flex; 
+            justify-content: center; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+        }
+        
+        .timeframe-buttons button {
+            background: white; 
+            color: #667eea; 
+            border: 2px solid #667eea;
+            padding: 8px 20px; 
+            border-radius: 25px; 
+            cursor: pointer;
+            font-size: 0.9em; 
+            font-weight: 600; 
+            transition: all 0.3s ease;
+        }
+        .timeframe-buttons button:hover { 
+            background: #f8f9ff; 
+            transform: translateY(-2px); 
+        }
+        .timeframe-buttons button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            border-color: transparent;
+        }
+        .timeframe-buttons button:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            transform: none; 
+        }
+        
+        #chartContainer { position: relative; height: 300px; margin-top: 20px; }
+        
+        .toast {
+            visibility: hidden; 
+            min-width: 250px; 
+            background-color: #333; 
+            color: #fff;
+            text-align: center; 
+            border-radius: 10px; 
+            padding: 16px; 
+            position: fixed;
+            z-index: 2000; 
+            left: 50%; 
+            bottom: 30px; 
+            transform: translateX(-50%);
+            font-size: 14px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; border-radius: 15px; }
+            h1 { font-size: 1.5em; }
+            table { font-size: 0.9em; }
+            th, td { padding: 10px 6px; }
+            .coin-name img { width: 24px; height: 24px; }
+            .modal-content { margin: 5% auto; padding: 15px; }
+            #chartContainer { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Курсы Криптовалют</h1>
+        <p class="subtitle">Нажмите на криптовалюту для просмотра графика</p>
+        <div id="loading" class="loading">Загрузка данных...</div>
+        
+        <div class="table-wrapper">
+            <table id="cryptoTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>#</th><th>Название</th><th>Символ</th>
+                        <th>Цена (USD)</th><th>1ч %</th><th>24ч %</th><th>7д %</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="chartModal" class="modal">
+        <div class="modal-content" id="modalContent">
+            <span class="close">&times;</span>
+            <h2 id="chartTitle">График</h2>
+            <div class="timeframe-buttons">
+                <button data-days="1">1 День</button>
+                <button data-days="7" class="active">7 Дней</button>
+                <button data-days="30">30 Дней</button>
+                <button data-days="365">1 Год</button>
+            </div>
+            <div id="chartContainer"><canvas id="priceChart"></canvas></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const coinIds = [
+            'bitcoin', 'ethereum', 'tether', 'binancecoin', 'solana', 
+            'usd-coin', 'xrp', 'dogecoin', 'cardano', 'tron',
+            'avalanche-2', 'shiba-inu', 'polkadot', 'chainlink', 'polygon-pos'
+        ];
+
+        let currentCoinId = null;
+        let chart = null;
+        let isFetching = false;
+
+        function showToast(message) {
+            const x = document.getElementById("toast");
+            x.innerText = message;
+            x.className = "toast show";
+            setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        async function fetchCryptoData() {
+            try {
+                const url = `https://api.coingecko.com/api/v3/coins/markets?ids=${coinIds.join(',')}&vs_currency=usd&order=market_cap_desc&per_page=15&page=1&sparkline=false&price_change_percentage=1h,24h,7d`;
+                const response = await fetch(url);
+                
+                if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
+                const data = await response.json();
+                renderTable(data);
+            } catch (error) {
+                document.getElementById('loading').innerText = `Ошибка: ${error.message}. Попробуйте позже.`;
+            }
+        }
+
+        function renderTable(coins) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            coins.forEach((coin, index) => {
+                const row = document.createElement('tr');
+                row.addEventListener('click', () => openChart(coin.id, coin.name));
+
+                const formatPercent = (val) => {
+                    if (val === null || val === undefined) return 'N/A';
+                    const formatted = Math.abs(val).toFixed(2) + '%';
+                    const className = val >= 0 ? 'positive' : 'negative';
+                    return `<span class="${className}">${val >= 0 ? '↑' : '↓'} ${formatted}</span>`;
+                };
+
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><div class="coin-name"><img src="${coin.image}" alt="${coin.name}"><span>${coin.name}</span></div></td>
+                    <td>${coin.symbol.toUpperCase()}</td>
+                    <td class="price">$${coin.current_price.toLocaleString()}</td>
+                    <td>${formatPercent(coin.price_change_percentage_1h_in_currency)}</td>
+                    <td>${formatPercent(coin.price_change_percentage_24h_in_currency)}</td>
+                    <td>${formatPercent(coin.price_change_percentage_7d_in_currency)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('loading').style.display = 'none';
+            const table = document.getElementById('cryptoTable');
+            table.style.display = 'table';
+            
+            // Анимация появления таблицы
+            setTimeout(() => {
+                table.classList.add('visible');
+                
+                // Поочередное появление строк
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach((row, index) => {
+                    setTimeout(() => {
+                        row.classList.add('visible');
+                    }, index * 80); // Каждая следующая строка появляется через 80мс
+                });
+            }, 100);
+        }
+
+        function openChart(coinId, coinName) {
+            if (isFetching) {
+                showToast("Подождите, данные загружаются...");
+                return;
+            }
+            
+            currentCoinId = coinId;
+            const modal = document.getElementById('chartModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modal.style.display = 'block';
+            document.getElementById('chartTitle').innerText = `📈 ${coinName}`;
+            
+            // Анимация появления модалки
+            setTimeout(() => {
+                modalContent.classList.add('show');
+            }, 10);
+            
+            document.querySelectorAll('.timeframe-buttons button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('button[data-days="7"]').classList.add('active');
+            
+            loadChartData(7);
+        }
+
+        document.querySelector('.close').addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => { 
+            if (e.target.id === 'chartModal') closeModal(); 
+        });
+
+        function closeModal() {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.classList.remove('show');
+            
+            setTimeout(() => {
+                document.getElementById('chartModal').style.display = 'none';
+                if (chart) { chart.destroy(); chart = null; }
+            }, 300);
+        }
+
+        document.querySelectorAll('.timeframe-buttons button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                if (isFetching) return;
+                document.querySelectorAll('.timeframe-buttons button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                loadChartData(parseInt(e.target.dataset.days));
+            });
+        });
+
+        async function loadChartData(days, retries = 2) {
+            isFetching = true;
+            const buttons = document.querySelectorAll('.timeframe-buttons button');
+            buttons.forEach(b => b.disabled = true);
+
+            try {
+                const url = `https://api.coingecko.com/api/v3/coins/${currentCoinId}/market_chart?vs_currency=usd&days=${days}`;
+                
+                let response;
+                for (let i = 0; i <= retries; i++) {
+                    try {
+                        response = await fetch(url);
+                        if (response.ok) break;
+                        if (response.status === 429) {
+                            await new Promise(r => setTimeout(r, 2000)); 
+                        }
+                    } catch (e) {
+                        if (i === retries) throw e;
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                }
+
+                if (!response || !response.ok) {
+                    throw new Error(`Сервер перегружен (${response?.status || 'Error'})`);
+                }
+
+                const data = await response.json();
+                renderChart(data.prices, days);
+
+            } catch (error) {
+                console.error(error);
+                showToast("Не удалось загрузить график. Попробуйте через минуту.");
+            } finally {
+                isFetching = false;
+                buttons.forEach(b => b.disabled = false);
+            }
+        }
+
+        function renderChart(prices, days) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            if (chart) chart.destroy();
+
+            const labels = prices.map(p => {
+                const date = new Date(p[0]);
+                if (days === 1) return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                if (days <= 30) return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+                return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
+            });
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
+            gradient.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Цена (USD)',
+                        data: prices.map(p => p[1]),
+                        borderColor: '#667eea',
+                        backgroundColor: gradient,
+                        borderWidth: 3, fill: true, tension: 0.4,
+                        pointRadius: 0, pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#667eea',
+                        pointHoverBorderColor: '#fff', pointHoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index', intersect: false,
+                            backgroundColor: 'rgba(102, 126, 234, 0.9)',
+                            titleColor: '#fff', bodyColor: '#fff',
+                            callbacks: { label: (ctx) => `$${ctx.parsed.y.toLocaleString()}` }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#888', maxTicksLimit: 8 } },
+                        y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#888', callback: (v) => '$' + v.toLocaleString() } }
+                    },
+                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                }
+            });
+        }
+
+        fetchCryptoData();
+        setInterval(fetchCryptoData, 60000);
+    </script>
+</body>
+</html>
